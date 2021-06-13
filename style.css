@@ -5,5 +5,96 @@
 @import url('https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css');
 
 * {
-	font-family: 'Langar', cursive;
+	box-sizing: border-box;
+}
+:root {
+	--font: 'Langar', cursive;
+}
+body {
+	background: #ffaa64;
+	font-family: var(--font);
+}
+button {
+	border: none;
+	border-radius: 0;
+}
+.primary-header {
+	margin-top: 50px;
+	font-size: 3rem;
+	text-align: center;
+	color: #fff;
+}
+
+main {
+	margin: 50px auto;
+	padding: 50px;
+	width: 400px;
+	height: 600px;
+	background: #fff;
+
+	box-shadow: 4px 4px 4px #d38747;
+}
+
+.game-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+select,
+option,
+button {
+	font-family: var(--font);
+}
+select,
+option {
+	font-size: 18px;
+	color: #5a5555;
+}
+#dropdown {
+	border: none;
+	border-bottom: 2px solid #292929;
+}
+
+.sign-switch {
+	width: 120px;
+	height: 40px;
+	box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.25);
+
+	display: flex;
+}
+
+.signbtn {
+	width: 50%;
+	height: 100%;
+	font-size: 18px;
+	background: #fff;
+}
+
+.signbtn.selected {
+	background: #8d91f2;
+	transform: scale(1.1);
+}
+
+.game-info {
+	margin-top: 100px;
+	font-size: 18px;
+	color: #38cece;
+}
+
+.board {
+	margin-top: 30px;
+	display: grid;
+	/* justify-content: space-between; */
+	grid-template-columns: repeat(3, 90px);
+	gap: 15px;
+}
+
+.field-btn {
+	height: 90px;
+	font-size: 30px;
+	background: #ffffff;
+	box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.25);
+	color: #e31e4e;
 }
