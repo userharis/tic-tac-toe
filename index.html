@@ -9,31 +9,34 @@
 		<script defer src="app.js"></script>
 	</head>
 	<body>
+		<header class="primary-header">Tic Tac Toe</header>
 		<main>
-			<form action="">
-				<label for="dropdown">Choose difficulty:</label>
-				<select name="level" id="dropdown">
-					<option value="easy" selected>Easy</option>
-					<option value="medium">Medium</option>
-					<option value="hard">Hard</option>
-					<option value="Unbeatable">Unbeatable</option>
-				</select>
-			</form>
-			<section class="sign-selectors">
-				<button data-sign="x" class="signbtn selected"><p>X</p></button>
-				<button data-sign="o" class="signbtn"><p>O</p></button>
-			</section>
-			<section class="board">
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-				<button class="field-btn"><p>x</p></button>
-			</section>
+			<div class="game">
+				<header class="game-header">
+					<select name="level" id="dropdown">
+						<option value="easy" selected>Easy</option>
+						<option value="medium">Medium</option>
+						<option value="hard">Hard</option>
+						<option value="Unbeatable">Unbeatable</option>
+					</select>
+					<section class="sign-selectors">
+						<button data-sign="x" class="signbtn selected"><p>X</p></button>
+						<button data-sign="o" class="signbtn"><p>O</p></button>
+					</section>
+				</header>
+				<p class="game-info">__your turn__</p>
+				<section class="board">
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+					<button class="field-btn"><p>X</p></button>
+				</section>
+			</div>
 		</main>
 	</body>
 </html>
