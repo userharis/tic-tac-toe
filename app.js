@@ -8,11 +8,20 @@ const gameBoard = (() => {
 	const resetBoard = () => {
 		_board.fill(undefined)
 	}
-	const getEmptyFieldsIndexes = () => {}
+	const getEmptyFieldsIndexes = () => {
+		const emptyFieldIndexes = []
+		_board.forEach((field, index) => {
+			if (!field) {
+				emptyFieldIndexes.push(index)
+			}
+		})
+		return emptyFieldIndexes
+	}
 	return {
 		getField,
 		setField,
-		resetBoard
+		resetBoard,
+		getEmptyFieldsIndexes
 	}
 })()
 
