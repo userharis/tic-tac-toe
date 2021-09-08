@@ -28,8 +28,10 @@ button {
 main {
 	margin: 50px auto;
 	padding: 50px;
-	width: 400px;
-	height: 600px;
+	width: 100%;
+	height: 100%;
+	max-width: 400px;
+	max-height: 600px;
 	background: #fff;
 
 	box-shadow: 4px 4px 4px #d38747;
@@ -102,4 +104,15 @@ option {
 .field-btn.winner {
 	background-color: cornflowerblue;
 	color: cornsilk;
+}
+
+@media (max-width: 800px) {
+	.primary-header {
+		margin-top: 25px;
+		font-size: 2.4rem;
+	}
+	main {
+		margin-top: 25px;
+		padding: 25px;
+	}
 }
