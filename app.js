@@ -154,6 +154,7 @@ const gameController = (() => {
 
 	const changeSign = sign => {
 		gameOver = false
+		whosTurn = 'humanPlayer'
 		displayController.resetBoardUI()
 		gameBoard.resetBoard()
 
@@ -192,7 +193,7 @@ const gameController = (() => {
 		// const randomIndex = emptyIndices[random]
 
 		const bestMove = minimax(gameBoard.getBoardClone(), botPlayer)
-		console.log(bestMove)
+
 		const index = bestMove.index
 		gameBoard.setField(index, botPlayer)
 		displayController.setField(index, botPlayer)
