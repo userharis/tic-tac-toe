@@ -24,12 +24,8 @@ const gameBoard = (() => {
 		// check for rows
 		for (let i = 0; i <= 6; i += 3) {
 			// starting index of rows; 0, 3, 6
-			if (
-				_board[i] &&
-				_board[i] === _board[i + 1] &&
-				_board[i] === _board[i + 2]
-			) {
-				return { status: 'over', winner: _board[i], indices: [i, i + 1, i + 2] }
+			if (board[i] && board[i] === board[i + 1] && board[i] === board[i + 2]) {
+				return { status: 'over', winner: board[i], indices: [i, i + 1, i + 2] }
 			}
 		}
 		// check for columns
