@@ -119,6 +119,14 @@ const displayController = (() => {
 		})
 	})()
 
+	const _difficultyDropdown = (() => {
+		const dropdown = document.getElementById('dropdown')
+		dropdown.addEventListener('change', function () {
+			const difficulty = +this.value
+			gameController.setDifficulty(difficulty)
+		})
+	})()
+
 	const _init = (() => {
 		const fieldBtns = document.querySelectorAll('.field-btn')
 		fieldBtns.forEach((btn, index) => {
@@ -149,9 +157,14 @@ const playerFactory = sign => {
 const gameController = (() => {
 	let gameOver = false
 	let whosTurn = 'humanPlayer'
+	let difficulty = 0 // any number between 0 and 100 inclusively
+
 	const humanPlayer = playerFactory('X')
 	const botPlayer = playerFactory('O')
 
+	const setDifficulty = num => {
+		difficulty = num
+	}
 	const changeSign = sign => {
 		gameOver = false
 		whosTurn = 'humanPlayer'
@@ -186,15 +199,22 @@ const gameController = (() => {
 	}
 
 	const makeAiMove = () => {
-		// random move for the time being
 		const emptyIndices = gameBoard.getEmptyFieldsIndices()
 
-		// const random = Math.floor(Math.random() * emptyIndices.length)
-		// const randomIndex = emptyIndices[random]
+		// get a random number between 0 and 100
+		const random = Math.round(Math.random() * 100)
 
-		const bestMove = minimax(gameBoard.getBoardClone(), botPlayer)
+		// if difficulty is less than random, use pick a random choice else choose best choice
 
-		const index = bestMove.index
+		let index
+		if (difficulty < random) {
+			const r = Math.floor(Math.random() * emptyIndices.length)
+			index = emptyIndices[r]
+		} else {
+			const bestMove = minimax(gameBoard.getBoardClone(), botPlayer)
+			index = bestMove.index
+		}
+
 		gameBoard.setField(index, botPlayer)
 		displayController.setField(index, botPlayer)
 
@@ -277,6 +297,7 @@ const gameController = (() => {
 	return {
 		makeMove,
 		makeAiMove,
-		changeSign
+		changeSign,
+		setDifficulty
 	}
 })()
