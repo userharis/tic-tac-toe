@@ -43,6 +43,13 @@ main {
 	justify-content: space-between;
 	align-items: center;
 }
+ #reset{
+	 margin-top: 15px;
+	 margin-left: 35%;
+ }
+ #reset:hover{
+	 background-color: #8d91f2;
+ }
 
 select,
 option,
@@ -111,6 +118,10 @@ option {
 		margin-top: 25px;
 		font-size: 2.4rem;
 	}
+	#reset{
+ 	 margin-top: 15px;
+ 	 margin-left: 32%;
+  }
 	main {
 		margin-top: 25px;
 		padding: 25px;

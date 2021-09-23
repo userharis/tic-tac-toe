@@ -301,3 +301,8 @@ const gameController = (() => {
 		setDifficulty
 	}
 })()
+
+  let reset = document.getElementById("reset");
+	reset.addEventListener('click', function() {
+  	window.location.reload();
+});
