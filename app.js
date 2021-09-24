@@ -132,6 +132,12 @@ const displayController = (() => {
 		fieldBtns.forEach((btn, index) => {
 			btn.addEventListener('click', () => gameController.makeMove(index))
 		})
+		
+		// reset button
+		let reset = document.getElementById("reset");
+	        reset.addEventListener('click', function() {
+  	        window.location.reload();
+  });
 	})()
 
 	return {
@@ -301,8 +307,3 @@ const gameController = (() => {
 		setDifficulty
 	}
 })()
-
-  let reset = document.getElementById("reset");
-	reset.addEventListener('click', function() {
-  	window.location.reload();
-});
