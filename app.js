@@ -172,6 +172,7 @@ const gameController = (() => {
 
 	const setDifficulty = num => {
 		difficulty = num
+                whosTurn = 'humanPlayer'
 	}
 	const changeSign = sign => {
 		gameOver = false
