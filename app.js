@@ -120,11 +120,13 @@ const displayController = (() => {
 	})()
 
 	const _difficultyDropdown = (() => {
-		const dropdown = document.getElementById('dropdown')
-		dropdown.addEventListener('change', function () {
-			const difficulty = +this.value
-			gameController.setDifficulty(difficulty)
-		})
+		const dropdownList = document.getElementById("dropdown");
+		  dropdownList.addEventListener('change', function (){
+		  displayController.resetBoardUI();
+		  gameBoard.resetBoard();
+		  const difficulty = +this.value;
+		  gameController.setDifficulty(difficulty);
+		})	
 	})()
 
 	const _init = (() => {
@@ -170,6 +172,7 @@ const gameController = (() => {
 
 	const setDifficulty = num => {
 		difficulty = num
+                whosTurn = 'humanPlayer'
 	}
 	const changeSign = sign => {
 		gameOver = false
