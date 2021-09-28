@@ -1,6 +1,6 @@
-import displayController from '/displayController.js'
-import gameBoard from '/gameBoard.js'
-import gameController from '/gameController.js'
+import displayController from './displayController.js'
+import gameBoard from './gameBoard.js'
+import gameController from './gameController.js'
 
 const game = (() => {
 	// DOM selections
