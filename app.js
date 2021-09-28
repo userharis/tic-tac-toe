@@ -82,12 +82,14 @@ const gameBoard = (() => {
 const displayController = (() => {
 	const _boardUI = Array.from(document.querySelectorAll('.field-btn p'))
 
-	const setField = (index, player) => {
-		const el = _boardUI[index]
-		el.textContent = player.getSign()
+	const events = {
+		fieldSelect: null,
+		signChange: null,
+		reset: null,
+		difficultyChange: null
 	}
 
-	const resetBoardUI = () => {
+	const _resetBoardUI = () => {
 		document
 			.querySelectorAll('.winner')
 			.forEach(btn => btn.classList.remove('winner'))
@@ -95,10 +97,12 @@ const displayController = (() => {
 		updateGameInfo('__your turn__')
 	}
 
-	const updateGameInfo = message => {
-		const gameInfo = document.querySelector('.game-info')
-		gameInfo.textContent = message
+	let updateGameInfo = gameInfo => {
+		return message => {
+			gameInfo.textContent = message
+		}
 	}
+
 	const highlightFields = indices => {
 		const fieldBtns = document.querySelectorAll('.field-btn')
 		indices.forEach(i => {
@@ -106,47 +110,70 @@ const displayController = (() => {
 		})
 	}
 
-	const _signSwitch = (() => {
-		const btns = document.querySelectorAll('.signbtn')
-		btns.forEach(btn => {
+	const renderBoard = (board = null) => {
+		if (!board) return _resetBoardUI()
+		board.forEach((field, index) => {
+			if (!field) return (_boardUI[index].textContent = '')
+			_boardUI[index].textContent = field
+		})
+	}
+
+	const on = (eventName, callback) => {
+		events[eventName] = callback
+		return displayController
+	}
+
+	const init = ({
+		fieldBtns,
+		signSwitchBtns,
+		resetBtn,
+		difficultyDropdown,
+		gameInfo
+	}) => {
+		fieldBtns.forEach((btn, index) => {
+			btn.addEventListener(
+				'click',
+				() => events.fieldSelect && events.fieldSelect(index)
+			)
+		})
+
+		signSwitchBtns.forEach(btn => {
 			btn.addEventListener('click', () => {
+				if (!events.signChange) return
+
 				document.querySelector('.signbtn.selected').classList.remove('selected')
 				btn.classList.add('selected')
 				btn.dataset.sign === 'X'
-					? gameController.changeSign('X')
-					: gameController.changeSign('O')
+					? events.signChange('X')
+					: events.signChange('O')
 			})
 		})
-	})()
 
-	const _difficultyDropdown = (() => {
-		const dropdownList = document.getElementById("dropdown");
-		  dropdownList.addEventListener('change', function (){
-		  displayController.resetBoardUI();
-		  gameBoard.resetBoard();
-		  const difficulty = +this.value;
-		  gameController.setDifficulty(difficulty);
-		})	
-	})()
+		resetBtn.addEventListener('click', () => events.reset && events.reset())
 
-	const _init = (() => {
-		const fieldBtns = document.querySelectorAll('.field-btn')
-		fieldBtns.forEach((btn, index) => {
-			btn.addEventListener('click', () => gameController.makeMove(index))
+		difficultyDropdown.addEventListener('change', function () {
+			events.difficultyChange && events.difficultyChange(+this.value)
 		})
-		
-		// reset button
-		let reset = document.getElementById("reset");
-	        reset.addEventListener('click', function() {
-  	        window.location.reload();
-  });
-	})()
+
+		displayController.updateGameInfo = updateGameInfo(gameInfo)
+
+		displayController.getSign = function () {
+			if (signSwitchBtns[0].classList.contains('selected'))
+				return signSwitchBtns[0].textContent
+			return signSwitchBtns[1].textContent
+		}
+
+		displayController.getDifficulty = function () {
+			return difficultyDropdown.value
+		}
+	}
 
 	return {
-		setField,
-		resetBoardUI,
 		highlightFields,
-		updateGameInfo
+		updateGameInfo,
+		on,
+		init,
+		renderBoard
 	}
 })()
 
@@ -166,43 +193,37 @@ const gameController = (() => {
 	let gameOver = false
 	let whosTurn = 'humanPlayer'
 	let difficulty = 0 // any number between 0 and 100 inclusively
+	let _gameBoard
+
+	const events = {
+		move: null,
+		gameOver: null
+	}
 
 	const humanPlayer = playerFactory('X')
 	const botPlayer = playerFactory('O')
 
 	const setDifficulty = num => {
 		difficulty = num
-                whosTurn = 'humanPlayer'
 	}
 	const changeSign = sign => {
-		gameOver = false
-		whosTurn = 'humanPlayer'
-		displayController.resetBoardUI()
-		gameBoard.resetBoard()
-
 		humanPlayer.setSign(sign)
 		sign === 'X' ? botPlayer.setSign('O') : botPlayer.setSign('X')
 	}
 
 	const makeMove = index => {
-		if (gameBoard.getField(index) || whosTurn === 'botPlayer' || gameOver)
+		if (_gameBoard.getField(index) || whosTurn === 'botPlayer' || gameOver)
 			return
-		gameBoard.setField(index, humanPlayer)
-		displayController.setField(index, humanPlayer)
-		const gameStatus = gameBoard.checkGameStatus()
+
+		_gameBoard.setField(index, humanPlayer)
+		const gameStatus = _gameBoard.checkGameStatus()
 		if (gameStatus.status === 'over') {
-			displayController.highlightFields(gameStatus.indices)
-			if (gameStatus.winner === 'tie') {
-				displayController.updateGameInfo(`__It's a tie, try again!__`)
-			} else {
-				displayController.updateGameInfo(
-					`__${gameStatus.winner} wins the game.__`
-				)
-			}
 			gameOver = true
+			events.move && events.move()
+			events.gameOver && events.gameOver(gameStatus)
 		} else {
 			whosTurn = 'botPlayer'
-			displayController.updateGameInfo("__Mr. Bot's turn__")
+			events.move && events.move(`__Mr. Bot's turn__`)
 			setTimeout(makeAiMove, 300)
 		}
 	}
@@ -224,30 +245,22 @@ const gameController = (() => {
 			index = bestMove.index
 		}
 
-		gameBoard.setField(index, botPlayer)
-		displayController.setField(index, botPlayer)
-
-		const gameStatus = gameBoard.checkGameStatus()
+		_gameBoard.setField(index, botPlayer)
+		const gameStatus = _gameBoard.checkGameStatus()
 		if (gameStatus.status === 'over') {
-			displayController.highlightFields(gameStatus.indices)
-			if (gameStatus.winner === 'tie') {
-				displayController.updateGameInfo(`__It's a tie, try again!__`)
-			} else {
-				displayController.updateGameInfo(
-					`__${gameStatus.winner} wins the game.__`
-				)
-			}
 			gameOver = true
+			events.move && events.move()
+			events.gameOver && events.gameOver(gameStatus)
 		} else {
 			whosTurn = 'humanPlayer'
-			displayController.updateGameInfo('__your turn__')
+			events.move && events.move(`__Your turn__`)
 		}
 	}
 
 	const minimax = (newBoard, player, depth = 0) => {
-		const emptyIndices = gameBoard.getEmptyFieldsIndices(newBoard)
+		const emptyIndices = _gameBoard.getEmptyFieldsIndices(newBoard)
 
-		const { winner } = gameBoard.checkGameStatus(newBoard)
+		const { winner } = _gameBoard.checkGameStatus(newBoard)
 		if (winner === humanPlayer.getSign()) {
 			return { score: depth - 20 }
 		}
@@ -303,10 +316,110 @@ const gameController = (() => {
 		return bestMove
 	}
 
+	const on = (eventName, callback) => {
+		events[eventName] = callback
+		return gameController
+	}
+
+	const init = ({ initialSign, initialDifficulty, gameBoard }) => {
+		changeSign(initialSign)
+
+		setDifficulty(initialDifficulty)
+
+		_gameBoard = gameBoard
+	}
+
+	const reset = () => {
+		gameOver = false
+		whosTurn = 'humanPlayer'
+		_gameBoard.resetBoard()
+	}
 	return {
 		makeMove,
 		makeAiMove,
 		changeSign,
-		setDifficulty
+		setDifficulty,
+		on,
+		init,
+		reset
 	}
+})()
+
+const game = (() => {
+	// DOM selections
+	const fieldBtns = document.querySelectorAll('.field-btn')
+	const signSwitchBtns = document.querySelectorAll('.signbtn')
+
+	const resetBtn = document.querySelector('#reset')
+	const difficultyDropdown = document.querySelector('#dropdown')
+
+	const gameInfo = document.querySelector('.game-info')
+
+	if (
+		fieldBtns.length !== 9 ||
+		signSwitchBtns.length !== 2 ||
+		!resetBtn ||
+		!difficultyDropdown ||
+		!gameInfo
+	) {
+		throw new Error('cannot Initialize game because DOM selection(s) are null')
+	}
+
+	// Initialization
+
+	displayController.init({
+		fieldBtns,
+		signSwitchBtns,
+		resetBtn,
+		difficultyDropdown,
+		gameInfo
+	})
+	const initialSign = displayController.getSign()
+	const initialDifficulty = displayController.getDifficulty()
+
+	gameController.init({ initialSign, initialDifficulty, gameBoard })
+
+	// Events
+	displayController
+		.on('fieldSelect', index => {
+			gameController.makeMove(index)
+		})
+
+		.on('signChange', sign => {
+			gameController.reset()
+			displayController.renderBoard()
+			gameController.changeSign(sign)
+		})
+
+		.on('reset', () => {
+			gameController.reset()
+			displayController.renderBoard()
+		})
+
+		.on('difficultyChange', difficulty => {
+			console.log(difficulty)
+			gameController.reset()
+			displayController.renderBoard()
+			gameController.setDifficulty(difficulty)
+		})
+
+	gameController
+		.on('move', message => {
+			const board = gameBoard.getBoardClone()
+			displayController.renderBoard(board)
+			if (message) {
+				displayController.updateGameInfo(message)
+			}
+		})
+
+		.on('gameOver', status => {
+			const { winner } = status
+
+			displayController.highlightFields(status.indices)
+
+			if (winner === 'tie')
+				return displayController.updateGameInfo(`__It's a tie, try again!__`)
+
+			displayController.updateGameInfo(`__${winner} wins the game`)
+		})
 })()
